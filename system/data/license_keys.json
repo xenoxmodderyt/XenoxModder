@@ -1,0 +1,32 @@
+{
+  "WBP9-5LR7-XYZE": {
+    "status": "active",
+    "admin": "7544190292",
+    "duration_days": 1,
+    "duration_type": "custom",
+    "created_at": 1782839180.15769,
+    "cost_paid": 0.0,
+    "activated_ip": "14.175.109.71",
+    "activated_at": 1782850597.1525335,
+    "expires_at": 1782936997.1513073,
+    "device_token": "462f60e1-5f71-4d69-bbb5-e3fb51050255",
+    "device_bound_at": 1782850597.1529706,
+    "telegram_user": "7544190292"
+  },
+  "TKF7-T7WJ-JQP3": {
+    "status": "active",
+    "admin": "7544190292",
+    "duration_days": 7,
+    "duration_type": "custom",
+    "created_at": 1782890849.077731,
+    "cost_paid": 0.0,
+    "activated_ip": "113.183.23.238",
+    "activated_at": 1782890869.4993372,
+    "expires_at": 1783495669.498428,
+    "device_token": "462f60e1-5f71-4d69-bbb5-e3fb51050255",
+    "device_bound_at": 1782905810.9282315,
+    "telegram_user": "7544190292",
+    "last_rebind_at": 1782905810.9278543,
+    "rebind_count": 8
+  }
+}
