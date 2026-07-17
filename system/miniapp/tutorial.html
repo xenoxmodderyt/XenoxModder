@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="vi" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hướng dẫn cấu hình Proxy</title>
+  <style>
+    :root {
+      --bg:#0a0e1a; --card:#0f1729; --card-hover:#131d35; --line:#1e2942; --txt:#f0f4ff; --muted:#8b9dc3;
+      --acc:#3b82f6; --acc2:#8b5cf6; --ok:#10b981; --danger:#ef4444; --warning:#f59e0b;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+      color:var(--txt); background:var(--bg);
+      background-image:
+        radial-gradient(ellipse 1200px 600px at 100% 0%, rgba(59,130,246,0.15), transparent),
+        radial-gradient(ellipse 1000px 500px at 0% 100%, rgba(139,92,246,0.12), transparent);
+      background-attachment:fixed;
+      min-height:100vh; line-height:1.6;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:24px 16px 40px}
+    .card{
+      background:var(--card); border:1px solid var(--line); border-radius:20px;
+      padding:24px; margin-bottom:20px; position:relative; overflow:hidden;
+      box-shadow:0 4px 6px rgba(0,0,0,.1), 0 20px 40px rgba(0,0,0,.2);
+      transition:transform .2s ease, box-shadow .2s ease;
+    }
+    .card::before{
+      content:''; position:absolute; top:0; left:0; right:0; height:1px;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);
+    }
+    .card:hover{transform:translateY(-2px);box-shadow:0 8px 12px rgba(0,0,0,.15), 0 24px 48px rgba(0,0,0,.25)}
+    
+    h1{font-size:36px;font-weight:800;margin:12px 0 8px;background:linear-gradient(135deg,#60a5fa,#a78bfa);
+       -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .muted{color:var(--muted);font-size:15px;line-height:1.7}
+    .title{
+      font-size:18px;margin:0 0 16px;color:var(--txt);font-weight:700;
+      display:flex;align-items:center;gap:8px;
+    }
+    .title::before{
+      content:'';width:4px;height:20px;background:linear-gradient(180deg,var(--acc),var(--acc2));
+      border-radius:2px;
+    }
+    .pill{
+      display:inline-block;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;
+      background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(139,92,246,.2));
+      border:1px solid rgba(139,92,246,.4);color:#c7d2fe;
+      box-shadow:0 0 20px rgba(139,92,246,.3);
+    }
+    .btn{
+      appearance:none;border:1px solid transparent;border-radius:12px;padding:12px 20px;cursor:pointer;
+      font-size:14px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;
+      gap:8px;color:white;background:linear-gradient(135deg,var(--acc),var(--acc2));
+      transition:all .2s ease;box-shadow:0 4px 12px rgba(59,130,246,.3);
+    }
+    .btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(59,130,246,.4)}
+    .btn-secondary{
+      background:rgba(30,41,59,.6);border:1px solid var(--line);color:#e2e8f0;
+      box-shadow:0 2px 8px rgba(0,0,0,.2);
+    }
+    .btn-secondary:hover{background:rgba(51,65,85,.8);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+    .banner{
+      margin-top:16px;padding:14px 18px;border-radius:12px;
+      background:linear-gradient(135deg,rgba(59,130,246,.1),rgba(139,92,246,.1));
+      border:1px solid rgba(139,92,246,.3);font-size:13px;color:#cbd5e1;
+      display:flex;align-items:center;gap:10px;
+    }
+    .banner::before{content:'💡';font-size:18px}
+    .toast{
+      position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+      background:linear-gradient(135deg,#065f46,#047857);color:#d1fae5;
+      border:1px solid #10b981;border-radius:12px;padding:12px 20px;
+      font-size:14px;font-weight:700;opacity:0;pointer-events:none;
+      transition:all .3s ease;box-shadow:0 8px 24px rgba(16,185,129,.4);
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(-8px)}
+    .video-box{
+      width:100%;border-radius:16px;overflow:hidden;
+      border:1px solid var(--line);background:#000;
+      box-shadow:0 8px 24px rgba(0,0,0,.4);
+    }
+    .video-box iframe{width:100%;display:block;aspect-ratio:16/9;border:0}
+    
+    /* Mod Safety Status Styles */
+    .mod-list{display:grid;gap:14px;margin-top:16px}
+    .mod-item{
+      background:linear-gradient(135deg,rgba(15,23,42,.8),rgba(30,41,59,.6));
+      border:1px solid var(--line);border-radius:16px;padding:20px;
+      transition:all .3s ease;position:relative;overflow:hidden;
+    }
+    .mod-item::before{
+      content:'';position:absolute;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,transparent,var(--acc),var(--acc2),transparent);
+      opacity:0;transition:opacity .3s ease;
+    }
+    .mod-item:hover{
+      transform:translateX(4px);border-color:rgba(59,130,246,.4);
+      box-shadow:0 8px 24px rgba(59,130,246,.2);
+    }
+    .mod-item:hover::before{opacity:1}
+    .mod-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px}
+    .mod-info{flex:1}
+    .mod-name{
+      font-size:17px;font-weight:700;color:#f0f4ff;margin-bottom:6px;
+      display:flex;align-items:center;gap:8px;
+    }
+    .mod-name::before{
+      content:'🎮';font-size:20px;
+    }
+    .mod-port{
+      font-size:12px;color:var(--muted);font-family:Consolas,Monaco,monospace;
+      background:rgba(30,41,59,.6);padding:4px 10px;border-radius:6px;
+      display:inline-block;border:1px solid var(--line);
+    }
+    .mod-connection{
+      display:grid;gap:10px;margin-top:16px;padding-top:16px;
+      border-top:1px solid rgba(30,41,59,.8);
+    }
+    .conn-row{
+      display:grid;grid-template-columns:100px 1fr auto;align-items:center;gap:12px;
+      background:rgba(15,23,42,.5);padding:12px;border-radius:10px;
+      border:1px solid rgba(30,41,59,.6);transition:all .2s ease;
+    }
+    .conn-row:hover{background:rgba(30,41,59,.6);border-color:rgba(59,130,246,.3)}
+    .conn-label{
+      font-size:11px;color:var(--muted);text-transform:uppercase;
+      letter-spacing:1px;font-weight:700;
+    }
+    .conn-value{
+      font-family:Consolas,Monaco,monospace;font-size:14px;font-weight:700;
+      color:#60a5fa;background:rgba(30,41,59,.8);padding:8px 14px;
+      border-radius:8px;border:1px solid rgba(59,130,246,.3);
+      text-align:center;user-select:all;
+      box-shadow:inset 0 2px 4px rgba(0,0,0,.2);
+    }
+    .conn-copy{
+      padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;
+      background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(139,92,246,.2));
+      color:#c7d2fe;border:1px solid rgba(139,92,246,.4);cursor:pointer;
+      transition:all .2s ease;white-space:nowrap;
+    }
+    .conn-copy:hover{
+      background:linear-gradient(135deg,rgba(59,130,246,.3),rgba(139,92,246,.3));
+      transform:scale(1.05);box-shadow:0 4px 12px rgba(139,92,246,.3);
+    }
+    .conn-copy:active{transform:scale(.95)}
+    .status-badge{
+      padding:8px 16px;border-radius:999px;font-size:11px;font-weight:800;
+      text-transform:uppercase;letter-spacing:1px;white-space:nowrap;
+      box-shadow:0 4px 12px rgba(0,0,0,.3);
+    }
+    .status-safe{
+      background:linear-gradient(135deg,#065f46,#047857);
+      color:#d1fae5;border:1px solid #10b981;
+      box-shadow:0 4px 12px rgba(16,185,129,.4);
+    }
+    .status-not-safe{
+      background:linear-gradient(135deg,#7f1d1d,#991b1b);
+      color:#fecaca;border:1px solid #ef4444;
+      box-shadow:0 4px 12px rgba(239,68,68,.4);
+      animation:pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%,100%{opacity:1}
+      50%{opacity:.7}
+    }
+    .loading{
+      text-align:center;padding:32px;color:var(--muted);
+      font-size:14px;display:flex;align-items:center;justify-content:center;gap:12px;
+    }
+    .loading::before{
+      content:'';width:20px;height:20px;border:3px solid var(--line);
+      border-top-color:var(--acc);border-radius:50%;
+      animation:spin 1s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+    
+    @media(max-width:640px){
+      .wrap{padding:16px 12px 32px}
+      .card{padding:18px;border-radius:16px}
+      h1{font-size:28px}
+      .title{font-size:16px}
+      .conn-row{grid-template-columns:1fr;gap:8px}
+      .conn-label{text-align:left}
+      .mod-header{flex-direction:column;align-items:flex-start}
+      .status-badge{align-self:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <span class="pill">✨ Thiết lập Nitro Proxy</span>
+      <h1>Hướng dẫn cấu hình</h1>
+      <p class="muted">
+        Tải chứng chỉ SSL và cấu hình Proxy. Mỗi loại mod sử dụng một cổng riêng để đạt hiệu năng tốt nhất.
+      </p>
+      <div class="actions">
+        <button id="openSafariBtn" class="btn" type="button">📥 Tải chứng chỉ</button>
+        <a class="btn btn-secondary" href="/miniapp">← Trang chính</a>
+      </div>
+      <div class="banner">
+        Hãy cài đặt chứng chỉ trên thiết bị trước khi cấu hình Proxy.
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="title">🛡️ Trạng thái an toàn của các bản Mod</div>
+      <p class="muted" style="margin:0 0 12px">Trạng thái an toàn được cập nhật theo thời gian thực. Hãy chọn cổng tương ứng với loại mod bạn muốn sử dụng.</p>
+      <div id="modList" class="mod-list">
+        <div class="loading">Đang tải trạng thái...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title">🎥 Video hướng dẫn</div>
+      <div class="video-box">
+        <iframe
+          src="https://www.youtube.com/embed/kZag4xbtBLo?si=qp7oJcvhQIChffUN"
+          title="Video hướng dẫn Nitro Proxy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen>
+        </iframe>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">Đã sao chép</div>
+  <script>
+    const tgApp = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+
+    function openCertInBrowser() {
+      const certUrl = `${window.location.origin}/miniapp/files/NitroXMitm.pem`;
+      if (tgApp && typeof tgApp.openLink === "function") {
+        tgApp.openLink(certUrl);
+        return;
+      }
+      window.open(certUrl, "_blank");
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg || "Đã sao chép";
+      t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 1400);
+    }
+
+    function legacyCopy(val) {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = val;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        ta.style.pointerEvents = "none";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        ta.setSelectionRange(0, ta.value.length);
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        return !!ok;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    async function copyText(val) {
+      const text = String(val || "");
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          showToast("✓ Đã sao chép: " + text);
+          return;
+        }
+      } catch (_) {
+        // fallback below
+      }
+
+      if (legacyCopy(text)) {
+        showToast("✓ Đã sao chép: " + text);
+      } else {
+        // final fallback for restrictive webviews
+        window.prompt("Sao chép giá trị này:", text);
+      }
+    }
+    
+    // Make copyText available globally for inline onclick
+    window.copyText = copyText;
+
+    document.querySelectorAll("[data-copy]").forEach((el) => {
+      el.addEventListener("click", () => copyText(el.getAttribute("data-copy") || ""));
+    });
+    document.getElementById("openSafariBtn").addEventListener("click", openCertInBrowser);
+
+    // Load mod safety status
+    async function loadModSafety() {
+      try {
+        const res = await fetch("/miniapp/mod_safety");
+        const data = await res.json();
+        
+        if (!data.ok || !data.mods) {
+          document.getElementById("modList").innerHTML = '<div class="loading">Không thể tải trạng thái</div>';
+          return;
+        }
+        
+        const mods = data.mods;
+        const sortedPorts = Object.keys(mods).sort((a, b) => parseInt(b) - parseInt(a));
+        
+        let html = '';
+        sortedPorts.forEach(port => {
+          const mod = mods[port];
+          const statusClass = mod.status === 'safe' ? 'status-safe' : 'status-not-safe';
+          const statusText = mod.status === 'safe' ? '✓ An toàn' : '⚠ Có nguy cơ khóa tài khoản';
+          const ip = '160.191.243.217'; // Replace with your VPS public IP
+          
+          html += `
+            <div class="mod-item">
+              <div class="mod-header">
+                <div class="mod-info">
+                  <div class="mod-name">${mod.name}</div>
+                  <div class="mod-port">Cổng ${port}</div>
+                </div>
+                <div class="status-badge ${statusClass}">${statusText}</div>
+              </div>
+              <div class="mod-connection">
+                <div class="conn-row">
+                  <span class="conn-label">🌐 Địa chỉ IP</span>
+                  <span class="conn-value">${ip}</span>
+                  <button class="conn-copy" onclick="copyText('${ip}')">📋 Sao chép</button>
+                </div>
+                <div class="conn-row">
+                  <span class="conn-label">🔌 Cổng</span>
+                  <span class="conn-value">${port}</span>
+                  <button class="conn-copy" onclick="copyText('${port}')">📋 Sao chép</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        
+        document.getElementById("modList").innerHTML = html;
+      } catch (e) {
+        console.error('Error loading mod safety:', e);
+        document.getElementById("modList").innerHTML = '<div class="loading">⚠️ Lỗi khi tải trạng thái</div>';
+      }
+    }
+    
+    // Load on page load
+    loadModSafety();
+    
+    // Refresh every 30 seconds
+    setInterval(loadModSafety, 30000);
+
+  </script>
+</body>
+</html>
